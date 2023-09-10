@@ -1,0 +1,113 @@
+print("*********welcome to ATM*********")
+# Time and Date Condition
+import datetime
+y=datetime.datetime.now()
+day=y.strftime("%A")
+date=y.strftime("%d")
+month=y.strftime("%b")
+year=y.strftime("%Y")
+hour=y.strftime("%H")
+minit=y.strftime("%M")
+sec=y.strftime("%S")
+print(f"{day}--{date}/{month}/{year},{hour}:{minit}:{sec}")
+
+# import mysql.connector used to connect python and my sql
+
+import mysql.connector 
+
+# mydb is my database variable
+
+mydb=mysql.connector.connect(
+    host = "localhost",
+    user = "root",
+    password = "12345",
+    database="atm_db"
+)
+
+mycursor=mydb.cursor()
+
+# Create  data
+
+def add_dt():
+    a="insert into user_table(id,user_name,account_number,account_pin,email,amount) values (%s,%s,%s,%s,%s,%s)"
+    id=int(input("enter your id :--"))
+    user_name=input("enter account user name:--")
+    account_number=input("enter your account no (number minimum 5) :--")
+    account_pin=input("enter your pin number:--")
+    email=input("enter your mail id:--")
+    amount=input("enter your amount:")
+    
+    data=(id,user_name,account_number,account_pin,email,amount)
+    mycursor.execute(a,data)
+    mydb.commit()
+    print(f"haii {user_name} your account no {account_number} are verified successfully")
+
+    value=input("you neat to continew with  account create or view -- enter y--")
+    if value=="y":
+        main_function()
+    
+    else:
+        print("your choice of work")
+
+# view data
+def view_dt():
+    d=input("Enter column name(id)only :") #getting column name to idenfy a column
+    e = input(f"Enter value in your {d}: ")
+
+    query = f"SELECT * FROM user_table WHERE {d} = %s" 
+
+    mycursor.execute(query, (e,))
+    data = mycursor.fetchall()
+
+    for row in data:
+        print(f"Your account details is {data}")
+
+        print("your choice of work")
+
+        value=input("you neat to continew with  account create or view -- enter y--")
+        if value=="y":
+            main_function()
+        else:
+            print("your choice of work")
+
+# Delete_data
+def delete_dt():
+    d=input("Enter column name(id)only :")   #getting column name to idenfy a column
+    e = input(f"Enter value in your {d}: ")
+
+    query=f"delete from user_table where {d}=%s"
+    mycursor.execute(query,(e,))
+    mydb.commit()
+    print("success fully deleted")
+    
+    value=input("you neat to continew with  account create or view -- enter y--")
+    if value=="y":
+        main_function()
+    else:
+        print("your choice of work")
+
+
+# main function to continew the account
+
+def main_function():
+    print("If You Nead To Create a Account Enter 1---")
+    print("If You Nead To View a Account Enter 2---")
+    print("If You Nead To Delete a Account Enter 3---")
+
+
+    user=int(input("enter your choice:--"))
+# if try is not worked in condition or contains a error it shows a except concept
+
+    try:
+        if user==1:
+            add_dt()
+        elif user==2:
+            view_dt()
+        elif user==3:
+            delete_dt()
+        else:
+            print("invalid number")
+
+    except:
+        print("invalid number please print correct value")
+main_function()
