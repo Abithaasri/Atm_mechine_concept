@@ -1,0 +1,181 @@
+import user_dt
+# importing from folder
+import smtplib
+# importing a mail sending file
+# function to work program
+def choice():
+    print("1. current balance")
+    print("2. debit amount")
+    print("3. credit amount")
+
+    choose=int(input("enter your catagiery:"))
+
+    if choose==1:
+        current_dt()
+    elif choose==2:
+        debit_balance()
+    elif choose==3:
+        credit_balance()
+    else:
+        print("enter right choice")
+
+
+def current_dt():
+# viewing a current account detail
+
+    d=input("Enter column name(id)only:")  #getting column name to idenfy a column
+    e = input(f"Enter value in your {d}: ")
+
+    query = f"SELECT * FROM user_table WHERE {d} = %s"      #used to perform the datas in data set
+
+    user_dt.mycursor.execute(query, (e,))           #used to execute particular function
+    data = user_dt.mycursor.fetchall()          # fetchall is used to take every data from a data set
+
+    pin=input("enter your pin no")
+
+    for row in data: #used to get the pin number
+      
+
+        if pin==row[3]:   #using if condition to check the pin number
+            print(f"your pin num is {row[3]}")
+
+            user_dt.mycursor.execute(query, (e,))
+            data = user_dt.mycursor.fetchall()
+
+            for row in data:
+                print(f"Your current balance is {row[5]}")
+
+            # try block is check the code if any error accer except block will work
+            try:
+                for row in data: #used to get the mail
+                    s=smtplib.SMTP('smtp.gmail.com',587)
+                    s.starttls()
+                    s.login("gardennature48@gmail.com","your_password")
+                    message=f"Your current balance is {row[5]}"
+                    s.sendmail("gardennature48@gmail.com",row[5],message)
+                    s.quit()
+            except:
+                    print(" please check your network to receve the mail ")
+        
+            value=input("you want to continew enter y--")
+            if value=="y":
+                choice()
+            else:
+                print("Thankyou for visiting")
+
+
+        else:
+            print("your pin number is wrong")
+
+
+def debit_balance():
+    d=input("Enter column name(id)only:")  #getting column name to idenfy a column
+    e = input(f"Enter value in your {d}: ")
+
+    query = f"SELECT * FROM user_table WHERE {d} = %s" 
+
+    user_dt.mycursor.execute(query, (e,))
+    data = user_dt.mycursor.fetchall()
+
+    pin=input("enter your pin no:")
+
+    for row in data:  
+      
+
+        if pin==row[3]:    #using if condition to check the pin number
+            print(f"pin is correct")
+
+            query = f"SELECT * FROM user_table WHERE {d} = %s" 
+
+            user_dt.mycursor.execute(query, (e,))
+            data = user_dt.mycursor.fetchall()
+
+            for row in data:
+                deposited = float(input("How much rupees deposited: "))         # amount that you depited
+                balance = float(row[5]) - deposited
+                print(f"Your current balance is {str(balance)}")
+                
+
+                a = f"UPDATE user_table  SET amount = %s WHERE {d} = %s" # updating the amount in data set
+                user_dt.mycursor.execute(a, (balance, e,))
+                user_dt.mydb.commit()
+
+                # try block is check the code if any error accer except block will work
+                try:
+                    for row in data: #used to get the mail
+                        s=smtplib.SMTP('smtp.gmail.com',587)
+                        s.starttls()
+                        s.login("gardennature48@gmail.com","yjsiyvudwkbzuevv")
+                        message=f"Your current balance is {str(balance)}"
+                        s.sendmail("gardennature48@gmail.com",row[4],message)
+                        s.quit()
+                except:
+                    print(" please check your network to receve the mail ")
+            
+                print(f"data saved successfully")
+                value=input("you want to continew enter y--")
+                if value=="y":
+                    choice()
+                else:
+                    print("Thankyou for visiting")
+
+        else:
+            print("your pin number is wrong")
+
+
+def credit_balance():
+
+    d=input("Enter column name(id)only:")      #getting column name to idenfy a column
+    e = input(f"Enter value in your {d}: ")
+
+    query = f"SELECT * FROM user_table WHERE {d} = %s"    #used to perform table execution
+
+    user_dt.mycursor.execute(query, (e,))
+    data = user_dt.mycursor.fetchall()
+
+    pin=input("enter your pin no")
+
+    for row in data:       #used to check pin number
+      
+
+        if pin==row[3]:       #using if condition to check the pin number
+            print(f"pin is correct")
+    
+            query = f"SELECT * FROM user_table WHERE {d} = %s" #used to perform table execution
+
+            user_dt.mycursor.execute(query, (e,))
+            data = user_dt.mycursor.fetchall()
+
+            for row in data:
+                deposited = float(input("How much rupees credited: "))
+                balance = float(row[5]) + deposited
+
+
+                a = f"UPDATE user_table  SET amount = %s WHERE {d} = %s"       # updating the amount in data set
+                user_dt.mycursor.execute(a, (balance, e,))
+                user_dt.mydb.commit()
+
+            # try block is check the code if any error accer except block will work
+                try:
+                    for row in data:       #used to get the mail
+                        s=smtplib.SMTP('smtp.gmail.com',587)
+                        s.starttls()
+                        s.login("gardennature48@gmail.com","yjsiyvudwkbzuevv")
+                        message=f"Your current balance is {str(balance)}"
+                        s.sendmail("gardennature48@gmail.com",row[4],message)
+                        s.quit()
+                except:
+                    print(" please check your network to recive the mail")
+                
+                print(f"Your current balance is {str(balance)}")
+
+                value=input("you want to continew enter y--")
+                if value=="y":
+                    choice()
+                else:
+                    print("Thankyou for visiting")
+
+        else:
+            print("your pin number is wrong")
+
+choice()
